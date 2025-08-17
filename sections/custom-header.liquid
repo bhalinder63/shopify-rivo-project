@@ -1,0 +1,514 @@
+{{ 'custom-typography.css' | asset_url | stylesheet_tag }}
+
+<div class="custom-header">
+  <div class="custom-header__container">
+    <!-- Header Navigation -->
+    <header class="custom-header__nav">
+      <div class="custom-header__nav-container">
+        <!-- Logo -->
+        <div class="custom-header__logo">
+          <a href="{{ routes.root_url }}" class="custom-header__logo-link">
+            {% if shop.brand.logo %}
+              <img
+                src="{{ shop.brand.logo | image_url: width: 200 }}"
+                alt="{{ shop.name | escape }}"
+                class="custom-header__logo-image"
+                width="{{ shop.brand.logo.width }}"
+                height="{{ shop.brand.logo.height }}"
+                loading="lazy"
+              >
+            {% else %}
+              <h1 class="brand-name">{{ shop.name | escape }}</h1>
+            {% endif %}
+          </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="custom-header__menu">
+          <ul class="custom-header__menu-list">
+            {% for link in linklists['main-menu'].links %}
+              <li class="custom-header__menu-item">
+                <a
+                  href="{{ link.url }}"
+                  class="nav-link{% if link.current %} active{% endif %}"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{- link.title -}}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+
+        <!-- User Actions -->
+        <div class="custom-header__actions">
+          <!-- Login Button -->
+          <div class="custom-header__login">
+            {% if customer %}
+              <a href="{{ routes.account_url }}" class="custom-header__login-btn">{{ 'customer.account.title' | t }}</a>
+            {% else %}
+              <a href="{{ routes.account_login_url }}" class="login-btn">
+                {{- section.settings.login_text | default: 'Login' -}}
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Shopping Cart -->
+          <div class="custom-header__cart">
+            <a href="{{ routes.cart_url }}" class="custom-header__cart-link" id="cart-icon-bubble">
+              <div class="custom-header__cart-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" class="icon icon-cart" viewBox="0 0 40 40">
+                  <path fill="currentColor" fill-rule="evenodd" d="M20.5 6.5a4.75 4.75 0 0 0-4.75 4.75v.56h-3.16l-.77 11.6a5 5 0 0 0 4.99 5.34h7.38a5 5 0 0 0 4.99-5.33l-.77-11.6h-3.16v-.57A4.75 4.75 0 0 0 20.5 6.5m3.75 5.31v-.56a3.75 3.75 0 1 0-7.5 0v.56zm-7.5 1h7.5v.56a3.75 3.75 0 1 1-7.5 0zm-1 0v.56a4.75 4.75 0 1 0 9.5 0v-.56h2.22l.71 10.67a4 4 0 0 1-3.99 4.27h-7.38a4 4 0 0 1-4-4.27l.72-10.67z"/>
+                </svg>
+                {% if cart != empty %}
+                  <div class="custom-header__cart-count">
+                    <span aria-hidden="true">{{ cart.item_count }}</span>
+                    <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+                  </div>
+                {% endif %}
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="custom-header__hero">
+      <div class="custom-header__hero-container">
+        <div class="custom-header__content">
+          <div class="custom-header__text">
+            <h2 class="hero-title">
+              {{ section.settings.hero_headline | default: 'Discover and Find Your Own Fashion!' }}
+            </h2>
+            <p class="hero-description">
+              {{
+                section.settings.hero_description
+                | default: 'Explore our curated collection of stylish clothing and accessories tailored to your unique taste.'
+              }}
+            </p>
+            <div class="custom-header__cta">
+              <a href="{{ section.settings.cta_url | default: routes.collections_url }}" class="cta-btn">
+                {{ section.settings.cta_text | default: 'Explore Now' }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Background Elements -->
+        <div class="custom-header__background">
+          {% if section.settings.hero_image %}
+            <div class="custom-header__hero-image">
+              {{ section.settings.hero_image | image_url: width: 570 | image_tag: loading: 'lazy' }}
+            </div>
+          {% endif %}
+          <div class="custom-header__decorative-dots custom-header__decorative-dots--left"></div>
+          <div class="custom-header__decorative-dots custom-header__decorative-dots--right"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .custom-header {
+    background: linear-gradient(135deg, #c2efd4 0%, #a8e6cf 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .custom-header__container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+  }
+
+  /* Header Navigation */
+  .custom-header__nav {
+    padding: 1rem 0;
+  }
+
+  .custom-header__nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .custom-header__logo {
+    flex-shrink: 0;
+  }
+
+  .custom-header__logo-link {
+    text-decoration: none;
+  }
+
+  .custom-header__logo-image {
+    max-height: 45px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* Brand Name */
+  .brand-name {
+    font-family: var(--font-brand);
+    font-size: clamp(2rem, 4vw, 3.125rem);
+    font-weight: var(--font-weight-light);
+    color: var(--color-primary-dark);
+    margin: 0;
+  }
+
+  /* Navigation */
+  .custom-header__menu {
+    flex: 1;
+    margin: 0 2rem;
+  }
+
+  .custom-header__menu-list {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .custom-header__menu-item {
+    margin: 0;
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-primary-dark);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-primary);
+  }
+
+  .custom-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .login-btn {
+    background: var(--color-surface);
+    border: 2px solid var(--color-primary-dark);
+    color: var(--color-primary-dark);
+    padding: 0.75rem 1.5rem;
+    border-radius: 3px;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-small);
+    font-weight: var(--font-weight-normal);
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+
+  .login-btn:hover {
+    background: var(--color-primary-dark);
+    color: var(--color-background);
+  }
+
+  .custom-header__cart-link {
+    position: relative;
+    display: block;
+    color: #224f34;
+    text-decoration: none;
+  }
+
+  .custom-header__cart-icon {
+    position: relative;
+    width: 30px;
+    height: 30px;
+  }
+
+  .custom-header__cart-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+
+  .custom-header__cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #10ff70;
+    color: #224f34;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: 1px 2px 9px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Hero Section */
+  .custom-header__hero {
+    padding: 4rem 0;
+    position: relative;
+  }
+
+  .custom-header__hero-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .custom-header__content {
+    max-width: 649px;
+  }
+
+  /* Hero Text */
+  .hero-title {
+    font-family: var(--font-heading-secondary);
+    font-size: var(--font-size-hero);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary-dark);
+    line-height: var(--line-height-tight);
+    margin: 0 0 2rem 0;
+  }
+
+  .hero-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-large);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-primary);
+    line-height: var(--line-height-loose);
+    margin: 0 0 3rem 0;
+    max-width: 565px;
+  }
+
+  /* CTA Button */
+  .cta-btn {
+    background: var(--color-primary-dark);
+    color: var(--color-background);
+    padding: 1.375rem 3.625rem;
+    border-radius: 3px;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-small);
+    font-weight: var(--font-weight-normal);
+    text-transform: uppercase;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: 6px 33px 59px var(--color-shadow-dark);
+  }
+
+  .cta-btn:hover {
+    background: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 8px 35px 65px var(--color-shadow-dark);
+  }
+
+  /* Background Elements */
+  .custom-header__background {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .custom-header__hero-image {
+    background: #6bc785;
+    border-radius: 141px 45px 150px 82px;
+    overflow: hidden;
+    width: 570px;
+    height: 717px;
+    position: relative;
+    box-shadow: inset 6px 4px 26px rgba(0, 0, 0, 0.12);
+  }
+
+  .custom-header__hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .custom-header__decorative-dots {
+    position: absolute;
+    width: 119px;
+    height: 110px;
+  }
+
+  .custom-header__decorative-dots--left {
+    bottom: -2rem;
+    left: -6rem;
+  }
+
+  .custom-header__decorative-dots--right {
+    top: 8rem;
+    right: -8rem;
+  }
+
+  .custom-header__decorative-dots::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 0% 0%, #267144 8px, transparent 8px),
+      radial-gradient(circle at 37px 0%, #267144 8px, transparent 8px),
+      radial-gradient(circle at 74px 0%, #267144 8px, transparent 8px),
+      radial-gradient(circle at 111px 0%, #267144 8px, transparent 8px);
+    background-size: 8px 34px;
+    background-repeat: repeat-y;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .custom-header__hero-container {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .custom-header__headline {
+      font-size: 4rem;
+    }
+  }
+
+  @media (max-width: 968px) {
+    .custom-header__nav-container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .custom-header__menu {
+      margin: 0;
+    }
+
+    .custom-header__menu-list {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .custom-header__headline {
+      font-size: 3rem;
+    }
+
+    .custom-header__description {
+      font-size: 1.25rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .custom-header__container {
+      padding: 0 1rem;
+    }
+
+    .custom-header__logo-image {
+      max-height: 50px;
+    }
+
+    .custom-header__brand {
+      font-size: 2rem;
+    }
+
+    .custom-header__menu-list {
+      gap: 1rem;
+    }
+
+    .custom-header__menu-link {
+      font-size: 1rem;
+    }
+
+    .custom-header__headline {
+      font-size: 2.5rem;
+    }
+
+    .custom-header__hero-image {
+      width: 300px;
+      height: 400px;
+    }
+
+    .custom-header__decorative-dots {
+      display: none;
+    }
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    word-wrap: normal !important;
+  }
+</style>
+
+{% comment %}
+  This section uses:
+  - Shop brand logo (shop.brand.logo)
+  - Navigation menu with handle "main-menu" (create in admin: Navigation > Menus)
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Custom Header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "User Actions"
+    },
+    {
+      "type": "text",
+      "id": "login_text",
+      "label": "Login Button Text",
+      "default": "Login"
+    },
+    {
+      "type": "header",
+      "content": "Hero Section"
+    },
+    {
+      "type": "text",
+      "id": "hero_headline",
+      "label": "Hero Headline",
+      "default": "Discover and Find Your Own Fashion!"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_description",
+      "label": "Hero Description",
+      "default": "Explore our curated collection of stylish clothing and accessories tailored to your unique taste."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Button Text",
+      "default": "Explore Now"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA Button URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Header"
+    }
+  ]
+}
+{% endschema %}

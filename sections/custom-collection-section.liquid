@@ -1,0 +1,419 @@
+{{ 'custom-typography.css' | asset_url | stylesheet_tag }}
+
+<div class="custom-collection-section">
+  <div class="custom-collection-section__container">
+    <div class="custom-collection-section__heading">
+      <h1 class="collection-title">{{ section.settings.collection.title }}</h1>
+      <div class="custom-collection-section__heading-description">
+        <p class="collection-description">
+          {{ section.settings.collection.description }}
+        </p>
+      </div>
+    </div>
+    <div class="custom-collection-section__products">
+      {% for product in section.settings.collection.products limit: 3 %}
+        <article class="custom-collection-section__product">
+          <a
+            href="{{ product.url }}"
+            class="custom-collection-section__product-link"
+            aria-label="View {{ product.title }}"
+          >
+            <div class="custom-collection-section__product-image">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 400 }}"
+                  alt="{{ product.featured_image.alt | default: product.title }}"
+                  width="400"
+                  height="400"
+                  loading="lazy"
+                >
+              {% else %}
+                <div class="custom-collection-section__product-placeholder">
+                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 50H52.5V42.5H7.5V50ZM15 35H45L37.5 25L30 35L25 27.5L15 35Z" fill="currentColor" opacity="0.3"/>
+                  </svg>
+                </div>
+              {% endif %}
+            </div>
+            <div class="custom-collection-section__product-content">
+              <h3 class="product-title">{{ product.title }}</h3>
+              <div class="custom-collection-section__product-meta">
+                <div class="custom-collection-section__product-price">
+                  {% if product.compare_at_price > product.price %}
+                    <span class="custom-collection-section__product-price--sale">{{ product.price | money }}</span>
+                    <span class="custom-collection-section__product-price--compare">
+                      {{- product.compare_at_price | money -}}
+                    </span>
+                  {% else %}
+                    <span class="custom-collection-section__product-price--regular">{{ product.price | money }}</span>
+                  {% endif %}
+                </div>
+                <div class="custom-collection-section__product-rating">
+                  <span class="custom-collection-section__rating-score">
+                    {% assign rating = 4.5 %}
+                    {% if forloop.index == 2 %}{% assign rating = 4.9 %}{% endif %}
+                    {% if forloop.index == 3 %}{% assign rating = 5.0 %}{% endif %}
+                    {{ rating }}
+                  </span>
+                  <span class="custom-collection-section__rating-stars">★</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="custom-collection-section__cta">
+      <a
+        href="{{ section.settings.collection.url | default: routes.collections_url }}"
+        class="custom-collection-section__see-all"
+      >
+        See all
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Collection Section",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Collection Section",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  .custom-collection-section {
+    min-height: 90vh;
+    position: relative;
+    padding: 8rem 0;
+  }
+
+  .custom-collection-section__container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+  }
+
+  .custom-collection-section__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 6rem;
+  }
+
+  /* Collection Header */
+  .collection-title {
+    font-family: var(--font-heading-primary);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary-dark);
+    margin-bottom: 2rem;
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.02em;
+  }
+
+  .custom-collection-section__heading-description {
+    max-width: 600px;
+  }
+
+  .collection-description {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-light);
+    color: var(--color-primary-dark);
+    line-height: var(--line-height-relaxed);
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .custom-collection-section__products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+    align-items: stretch;
+    margin-bottom: 4rem;
+  }
+
+  .custom-collection-section__product {
+    background: #a8d5ba;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .custom-collection-section__product:hover,
+  .custom-collection-section__product:focus-within {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  }
+
+  .custom-collection-section__product-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .custom-collection-section__product-link:focus {
+    outline: 3px solid #7ed09b;
+    outline-offset: 3px;
+    border-radius: 16px;
+  }
+
+  .custom-collection-section__product-image {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 0.75;
+    background: #a8d5ba;
+  }
+
+  .custom-collection-section__product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .custom-collection-section__product:hover .custom-collection-section__product-image img {
+    transform: scale(1.05);
+  }
+
+  .custom-collection-section__product-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: rgba(0, 0, 0, 0.4);
+    background: #a8d5ba;
+  }
+
+  .custom-collection-section__product-content {
+    padding: 2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #fff;
+  }
+
+  .product-title {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-small);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text-primary);
+    margin: 0 0 1rem 0;
+    line-height: var(--line-height-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .custom-collection-section__product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .custom-collection-section__product-price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .custom-collection-section__product-price--regular,
+  .custom-collection-section__product-price--sale {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #373737;
+    margin: 0;
+  }
+
+  .custom-collection-section__product-price--sale {
+    color: #7ed09b;
+    font-weight: 700;
+  }
+
+  .custom-collection-section__product-price--compare {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: line-through;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .custom-collection-section__product-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .custom-collection-section__rating-score {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #373737;
+  }
+
+  .custom-collection-section__rating-stars {
+    color: #ffd700;
+    font-size: 1rem;
+  }
+
+  .custom-collection-section__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .custom-collection-section__see-all {
+    background: transparent;
+    border: 2px solid #373737;
+    color: #373737;
+    padding: 1rem 3.5rem;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .custom-collection-section__see-all:hover {
+    background: #a8d5ba;
+    color: #000000;
+    transform: translateY(-2px);
+  }
+
+  .custom-collection-section__see-all svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  .custom-collection-section__see-all:hover svg {
+    transform: translateX(4px);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1200px) {
+    .custom-collection-section__products {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+    }
+  }
+
+  @media (max-width: 968px) {
+    .custom-collection-section {
+      padding: 6rem 0;
+    }
+
+    .custom-collection-section__container {
+      padding: 0 1.5rem;
+    }
+
+    .custom-collection-section__heading {
+      margin-bottom: 4rem;
+    }
+
+    .custom-collection-section__heading h1 {
+      font-size: 3.5rem;
+    }
+
+    .custom-collection-section__products {
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .custom-collection-section {
+      padding: 4rem 0;
+    }
+
+    .custom-collection-section__container {
+      padding: 0 1rem;
+    }
+
+    .custom-collection-section__heading {
+      margin-bottom: 3rem;
+    }
+
+    .custom-collection-section__heading h1 {
+      font-size: 2.5rem;
+    }
+
+    .custom-collection-section__products {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .custom-collection-section__product-content {
+      padding: 1.5rem;
+    }
+
+    .custom-collection-section__product-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+  }
+
+  /* Animation for initial load */
+  .custom-collection-section__product {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+
+  .custom-collection-section__product:nth-child(1) {
+    animation-delay: 0.2s;
+  }
+  .custom-collection-section__product:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  .custom-collection-section__product:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
