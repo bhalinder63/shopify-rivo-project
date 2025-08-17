@@ -612,6 +612,9 @@
         
         // Update availability
         updateAvailability(matchingVariant);
+        
+        // Update main image for variant
+        updateVariantImage(matchingVariant);
       }
     }
 
@@ -655,6 +658,32 @@
           buyNowBtn.disabled = true;
         }
       }
+    }
+
+    function updateVariantImage(variant) {
+      if (!variant.featured_image) return;
+      
+      const mainImage = document.getElementById('main-product-image');
+      if (!mainImage) return;
+      
+      // Update main image
+      const newImageUrl = variant.featured_image.src.replace(/width=\d+/, 'width=800');
+      mainImage.src = newImageUrl;
+      mainImage.alt = variant.featured_image.alt || variant.name;
+      
+      // Update active thumbnail
+      const thumbnails = document.querySelectorAll('.product-template__thumbnail');
+      thumbnails.forEach(function(thumbnail) {
+        const mediaId = thumbnail.getAttribute('data-media-id');
+        if (mediaId && mediaId == variant.featured_image.id) {
+          // Remove active class from all thumbnails
+          thumbnails.forEach(function(thumb) {
+            thumb.classList.remove('active');
+          });
+          // Add active class to matching thumbnail
+          thumbnail.classList.add('active');
+        }
+      });
     }
 
     function formatMoney(cents) {
